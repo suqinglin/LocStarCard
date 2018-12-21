@@ -10,6 +10,7 @@ import android.util.Log;
 public class Constants {
 
     public static boolean DEBUG = true;
+    public static String SDK_VERSION = "1.0.0";
     public static final int STATUS_SUCC = 10000;
     public static final int STATUS_FAIL = 20000;
     public static final int STATUS_AUTH_FAIL = 20001;

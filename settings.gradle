@@ -1,1 +1,1 @@
-include ':app', ':locstarcard'
+include ':app',':locstarcard'
