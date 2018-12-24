@@ -8,6 +8,9 @@ import com.speedata.r6lib.IMifareManager;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.android.hflibs.Mifare_native.AUTH_TYPEA;
+import static com.android.hflibs.Mifare_native.AUTH_TYPEB;
 import static com.nexless.locstarcard.Utils.Constants.STATUS_DATA_LOSE;
 import static com.nexless.locstarcard.Utils.Constants.STATUS_SUCC;
 import static com.nexless.locstarcard.Utils.Constants.logI;
@@ -24,9 +27,9 @@ public class CardHelper {
     private static final byte CARD_TYPE_AUTH = 0x00;
     private static final byte CARD_TYPE_CONSUMER = 0x0C;
 
-    public ReadCardResult readConsumerCard(IMifareManager mifareManager, int sector, byte[] keyB) {
+    public ReadCardResult readConsumerCard(IMifareManager mifareManager, int sector, byte[] keyA) {
 
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB);
+        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyA, AUTH_TYPEA);
         ReadCardResult readCardResult = new ReadCardResult();
         readCardResult.setResultCode(conn.resultCode);
         if (conn.resultCode != STATUS_SUCC ) {
@@ -39,10 +42,10 @@ public class CardHelper {
 
         // 读取数据
         byte[] data = mifareManager.ReadBlock(sector * 4 + 1);
-        for (int i = 0; i < 4; i++) {
-            byte[] b = mifareManager.ReadBlock(sector * 4 + i);
-            logI(TAG, "read data block:" + i + "=======================" + Utils.bytesToHexString(b));
-        }
+//        for (int i = 0; i < 4; i++) {
+//            byte[] b = mifareManager.ReadBlock(sector * 4 + i);
+//            logI(TAG, "read data block:" + i + "=======================" + Utils.bytesToHexString(b));
+//        }
         mifareManager.ActiveCard(conn.cardId);
         if (data == null || data.length < 16) {
             readCardResult.setResultCode(STATUS_DATA_LOSE);
@@ -53,18 +56,28 @@ public class CardHelper {
 
 
         // 解析数据
-        try {
-            card.setLoss(Integer.parseInt(strData.substring(2, 4)) != 0);
-            card.setStartTime(Long.parseLong(strData.substring(4, 14)));
-            card.setEndTime(Long.parseLong(strData.substring(14, 24)));
-            card.setRoomNum(Utils.fillPosition(Integer.parseInt(strData.substring(24, 26)), 2, "0")
-            + Utils.fillPosition(Integer.parseInt(strData.substring(26, 28)), 2, "0")
-            + Utils.fillPosition(Integer.parseInt(strData.substring(28, 30)), 2, "0")
-            + Utils.fillPosition(Integer.parseInt(strData.substring(30, 32)), 2, "0"));
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        if ("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF".equals(strData)) {
+            card.setUnRegister(true);
+        } else {
+            card.setUnRegister(false);
+            try {
+                card.setLoss(data[1] != 0);
+                byte[] start = new byte[5];
+                byte[] end = new byte[5];
+                System.arraycopy(data, 2, start, 0, 5);
+                System.arraycopy(data, 7, end, 0, 5);
+                logI(TAG, "read data starTime:================" + Utils.bytesToHexString(start));
+                logI(TAG, "read data block:================" + Utils.bytesToHexString(end));
+                card.setStartTime(Utils.bytesToTime(start));
+                card.setEndTime(Utils.bytesToTime(end));
+                card.setRoomNum(Utils.fillPosition(data[12], 2, "0")
+                        + Utils.fillPosition(data[13], 2, "0")
+                        + Utils.fillPosition(data[14], 2, "0")
+                        + Utils.fillPosition(data[15], 2, "0"));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
-
         logI(TAG, "read data card:" + card.toString());
         return readCardResult;
     }
@@ -79,7 +92,7 @@ public class CardHelper {
     public Result setKeyA(IMifareManager mifareManager, int sector, byte[] keyB) {
 
         Result result = new Result();
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB);
+        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB, AUTH_TYPEB);
         result.setResultCode(conn.resultCode);
         if (conn.resultCode != STATUS_SUCC) {
             return result;
@@ -113,7 +126,7 @@ public class CardHelper {
      */
     public Result writeConsumerCard(IMifareManager mifareManager, int sector, byte[] keyB, long start, long end, int buildNum, int floorNum, int houseNum, int childHouseNum) {
         Result result = new Result();
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB);
+        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB, AUTH_TYPEB);
         result.setResultCode(conn.resultCode);
         if (result.getResultCode() != STATUS_SUCC) {
             return result;
@@ -126,12 +139,9 @@ public class CardHelper {
         byte[] block1 = new byte[16];
         block1[0] = CARD_TYPE_CONSUMER;
         block1[1] = 0x00;
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(start, 10, "0")), 0, block1, 2, 5);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(end, 10, "0")), 0, block1, 7, 5);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(buildNum, 2, "0")), 0, block1, 12, 1);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(floorNum, 2, "0")), 0, block1, 13, 1);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(houseNum, 2, "0")), 0, block1, 14, 1);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(childHouseNum, 2, "0")), 0, block1, 15, 1);
+        System.arraycopy(Utils.timeToBytes(start), 0, block1, 2, 5);
+        System.arraycopy(Utils.timeToBytes(end), 0, block1, 7, 5);
+        System.arraycopy(new byte[] {(byte)buildNum, (byte) floorNum, (byte) houseNum, (byte) childHouseNum}, 0, block1, 12, 4);
         dataMap.put(1, block1);
         byte[] block2 = new byte[16];
         System.arraycopy(keyA, 0, block2, 12, 3);
@@ -151,7 +161,7 @@ public class CardHelper {
 
     public Result cancelCard(IMifareManager mifareManager, int sector, byte[] keyB) {
         Result result = new Result();
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB);
+        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB, AUTH_TYPEB);
         result.setResultCode(conn.resultCode);
         if (result.getResultCode() != STATUS_SUCC) {
             return result;
@@ -172,7 +182,7 @@ public class CardHelper {
     public Result writeAuthCard(IMifareManager mifareManager, int sector, byte[] keyB, byte[] consumerAuthKeyA, long start, long end) {
 
         Result result = new Result();
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB);
+        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB, AUTH_TYPEB);
         result.setResultCode(conn.resultCode);
         if (result.getResultCode() != STATUS_SUCC) {
             return result;
@@ -183,8 +193,8 @@ public class CardHelper {
         dataMap.put(0, block0);
         byte[] block1 = new byte[16];
         block1[0] = CARD_TYPE_AUTH;
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(start, 10, "0")), 0, block1, 2, 5);
-        System.arraycopy(Utils.hexStringToBytes(Utils.fillPosition(end, 10, "0")), 0, block1, 7, 5);
+        System.arraycopy(Utils.timeToBytes(start), 0, block1, 2, 5);
+        System.arraycopy(Utils.timeToBytes(end), 0, block1, 7, 5);
         dataMap.put(1, block1);
         byte[] block2 = new byte[16];
         System.arraycopy(consumerAuthKeyA, 0, block2, 1, 6);

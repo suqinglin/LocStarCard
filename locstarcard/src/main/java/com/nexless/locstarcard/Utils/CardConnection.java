@@ -37,11 +37,13 @@ public class CardConnection {
         System.arraycopy(xorData, 32, block2, 0, 15);
         block2[15] = Utils.getXor(xorData);
         dataMap.put(2, block2);
-        // 循環介入數據
+        // 循環写入數據
         for (int i : dataMap.keySet()) {
             byte[] data = dataMap.get(i);
             if (data != null) {
-                mifareManager.WriteBlock(sector * 4 + i, data);
+                if (mifareManager.WriteBlock(sector * 4 + i, data) != 0) {
+                    return Constants.STATUS_WRITE_FAIL;
+                }
                 logI(TAG, "write data block" + i + " :" + Utils.bytesToHexString(data));
             }
         }
@@ -50,7 +52,7 @@ public class CardConnection {
         return Constants.STATUS_SUCC;
     }
 
-    public static ConnectInfo connect(IMifareManager mifareManager, int sector, byte[] keyB) {
+    public static ConnectInfo connect(IMifareManager mifareManager, int sector, byte[] keyB, int keyType) {
         logI(TAG, "sector:" + sector + "    keyB:" + Utils.bytesToHexString(keyB));
         ConnectInfo connectInfo = new ConnectInfo();
         connectInfo.resultCode = Constants.STATUS_SUCC;
@@ -64,7 +66,7 @@ public class CardConnection {
         connectInfo.cardId = ID;
 //        logI(TAG, String.format("=================keyB:%d", keyB));
         // 授权
-        if (mifareManager.AuthenticationCardByKey(AUTH_TYPEB, ID, sector * 4, keyB) != 0) {
+        if (mifareManager.AuthenticationCardByKey(keyType, ID, sector * 4, keyB) != 0) {
             logI(TAG, "Auth failure, keyB:" + Utils.bytesToHexString(keyB));
             connectInfo.resultCode = Constants.STATUS_AUTH_FAIL;
             return connectInfo;

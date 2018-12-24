@@ -12,6 +12,7 @@ public class CardInfo {
     private long startTime; //开始时间
     private long endTime; // 结束时间
     private boolean isLoss; // 是否挂失
+    private boolean isUnRegister; // 是否注销
 
     public CardInfo() {
     }
@@ -22,6 +23,14 @@ public class CardInfo {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isLoss = isLoss;
+    }
+
+    public boolean isUnRegister() {
+        return isUnRegister;
+    }
+
+    public void setUnRegister(boolean unRegister) {
+        isUnRegister = unRegister;
     }
 
     public String getCardId() {

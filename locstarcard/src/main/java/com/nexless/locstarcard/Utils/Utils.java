@@ -1,11 +1,18 @@
 package com.nexless.locstarcard.Utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @date: 2018/12/17
  * @author: su qinglin
  * @description: 工具类
  */
 public class Utils {
+
+    public static final String DATA_FORMAT_2 = "yyMMddHHmm";
+
     /**
      * 数组转换成十六进制字符串
      *
@@ -60,6 +67,64 @@ public class Utils {
         return srcBuilder.toString();
     }
 
+    /**
+     * 10位时间戳转为年月日 时分秒
+     * @param time
+     * @return
+     */
+    public static String longToString(long time)
+    {
+        long t = time*1000L;
+        SimpleDateFormat sdf = new SimpleDateFormat(DATA_FORMAT_2);
+        Date date = new Date(t);
+        return sdf.format(date);
+    }
+
+    /**
+     * 年月日时分秒转为10位时间戳
+     * @param time
+     * @return
+     */
+    public static long stringToLong(String time)
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATA_FORMAT_2);
+        Date date = new Date();
+        try{
+            date = dateFormat.parse(time);
+        } catch(ParseException e) {
+            e.printStackTrace();
+        }
+        return date.getTime()/1000;
+    }
+
+    /**
+     * 时间毫秒数转byte[]
+     * @return
+     */
+    public static byte[] timeToBytes(long time) {
+
+        String timeStr = longToString(time);
+        int length = timeStr.length() / 2;
+        byte[] d = new byte[length];
+        for (int i = 0; i < length; i++) {
+            String subStr = timeStr.substring(i * 2, i * 2 + 2);
+            d[i] = (byte) Integer.parseInt(subStr);
+        }
+        return d;
+    }
+
+    /**
+     * byte[]时间毫秒数
+     * @return
+     */
+    public static long bytesToTime(byte[] timeArray) {
+
+        StringBuilder sb = new StringBuilder();
+        for (byte b: timeArray) {
+            sb.append(fillPosition(b, 2, "0"));
+        }
+        return stringToLong(sb.toString());
+    }
     /**
      * 补位
      * @param src

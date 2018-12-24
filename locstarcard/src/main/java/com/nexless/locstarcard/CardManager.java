@@ -21,7 +21,7 @@ public class CardManager {
 
     private static CardManager instance;
     private IMifareManager mifareManager;
-    private int sectorIndex = 10;
+    private int sectorIndex = 11;
     private CardHelper helper;
 
     private CardManager() {
