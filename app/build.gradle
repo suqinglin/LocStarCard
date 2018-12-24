@@ -7,7 +7,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -19,11 +19,12 @@ android {
 }
 
 repositories {
-    jcenter()
-    mavenCentral()
-    maven {
-        url "https://repo.eclipse.org/content/repositories/paho-releases/"
-    }
+//    jcenter()
+//    mavenCentral()
+//    //本地Maven仓库地址
+//    maven {
+//        url 'file://E://workspace//LocStarCardDemo//repository'
+//    }
     flatDir {
         dirs 'libs'
     }
@@ -36,6 +37,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation(name: 'locstarcardApi_1.0.0', ext: 'aar')
-    implementation 'com.speedata:r6lib:2.0'
+//        implementation(name: 'locstarcardApi_1.0.0', ext: 'aar')
+    //    implementation 'com.speedata:r6lib:2.0'
+    //    implementation files('libs/locstarCardLib_1.0.jar')
+    //    implementation 'com.nexless.locstarcard:locstarCardLib:1.0'
+    implementation project(':locstarcard')
 }

@@ -179,6 +179,8 @@ public class WriteCardActivity extends BaseActivity implements View.OnClickListe
         String endTime = tvEndD.getText().toString() + " " + tvEndT.getText().toString();
         long start = DateUtil.stringToLong(startTime);
         long end = DateUtil.stringToLong(endTime);
+//        byte[] start = new byte[5];
+//        start[0] = mSYear;
         String buildNumStr = edtBuildNum.getText().toString().trim();
         if (TextUtils.isEmpty(buildNumStr)) {
             showToast("请输入楼栋号！");

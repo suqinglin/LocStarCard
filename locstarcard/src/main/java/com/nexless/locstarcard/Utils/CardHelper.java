@@ -39,14 +39,18 @@ public class CardHelper {
 
         // 读取数据
         byte[] data = mifareManager.ReadBlock(sector * 4 + 1);
+        for (int i = 0; i < 4; i++) {
+            byte[] b = mifareManager.ReadBlock(sector * 4 + i);
+            logI(TAG, "read data block:" + i + "=======================" + Utils.bytesToHexString(b));
+        }
         mifareManager.ActiveCard(conn.cardId);
         if (data == null || data.length < 16) {
             readCardResult.setResultCode(STATUS_DATA_LOSE);
             return readCardResult;
         }
-
         String strData = Utils.bytesToHexString(data);
         logI(TAG, "read data:" + strData);
+
 
         // 解析数据
         try {
@@ -139,6 +143,10 @@ public class CardHelper {
         dataMap.put(3, block3);
         result.setResultCode(CardConnection.writeData(mifareManager, sector, conn.cardId, dataMap));
         return result;
+    }
+
+    public byte[] getKeyA() {
+        return keyA;
     }
 
     public Result cancelCard(IMifareManager mifareManager, int sector, byte[] keyB) {

@@ -62,6 +62,7 @@ public class CardConnection {
             return connectInfo;
         }
         connectInfo.cardId = ID;
+//        logI(TAG, String.format("=================keyB:%d", keyB));
         // 授权
         if (mifareManager.AuthenticationCardByKey(AUTH_TYPEB, ID, sector * 4, keyB) != 0) {
             logI(TAG, "Auth failure, keyB:" + Utils.bytesToHexString(keyB));

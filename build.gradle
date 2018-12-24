@@ -15,10 +15,12 @@ buildscript {
     }
 }
 
+// E:\workspace\LocStarCardDemo\repository
 allprojects {
     repositories {
         google()
         jcenter()
+        mavenCentral()
     }
 }
 

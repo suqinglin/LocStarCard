@@ -58,7 +58,7 @@ public class CardManager {
      */
     public ReadCardResult readCard() {
 
-        return helper.readConsumerCard(mifareManager, sectorIndex, Constants.DEFAULT_KEY_B);
+        return helper.readConsumerCard(mifareManager, sectorIndex, helper.getKeyA());
 //        return helper.readConsumerCard(mifareManager, sectorIndex, Utils.hexStringToBytes("FFFFFFFFFFFF"));
     }
 
