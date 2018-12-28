@@ -16,5 +16,6 @@ public class AppManager extends Application {
     public void onCreate() {
         super.onCreate();
         CardManager.getInstance().init();
+        CardManager.getInstance().setDebug(true);
     }
 }

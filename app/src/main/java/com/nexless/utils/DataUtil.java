@@ -11,7 +11,7 @@ public class DataUtil {
 
         CharSequence[] sectorArr = new CharSequence[16];
         for (int i = 0; i < sectorArr.length; i++) {
-            sectorArr[i] = "第" + (i + 1) + "扇区";
+            sectorArr[i] = "第" + i + "扇区";
         }
         return sectorArr;
     }

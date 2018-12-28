@@ -44,6 +44,10 @@ public class CardManager {
         mifareManager.InitDev();
     }
 
+    public void setDebug(boolean debug) {
+        Constants.DEBUG = debug;
+    }
+
     /**
      * 设置扇区
      * @param sectorIndex 扇区编号0~15
@@ -59,9 +63,12 @@ public class CardManager {
     public ReadCardResult readCard() {
 
         return helper.readConsumerCard(mifareManager, sectorIndex, helper.getKeyA());
-//        return helper.readConsumerCard(mifareManager, sectorIndex, Utils.hexStringToBytes("FFFFFFFFFFFF"));
     }
 
+    /**
+     * 获取授权
+     * @return
+     */
     public Result getAuth() {
 
         return helper.setKeyA(mifareManager, sectorIndex, Constants.DEFAULT_KEY_B);
@@ -76,22 +83,13 @@ public class CardManager {
         GetCardIdResult result = new GetCardIdResult();
         byte[] id = CardConnection.getCardId(mifareManager);
         if (id == null) {
-            result.setResultCode(Constants.STATUS_NO_CARD_FOUND);
+            result.setResultCode(Result.STATUS_NO_CARD_FOUND);
         } else {
             mifareManager.ActiveCard(id);
-            result.setResultCode(Constants.STATUS_SUCC);
+            result.setResultCode(Result.STATUS_SUCC);
             result.setCardId(Utils.bytesToHexString(id));
         }
         return result;
-    }
-
-    /**
-     * 读卡
-     * @return 卡片信息
-     */
-    public ReadCardResult readCardWithKeyB(String keyB) {
-
-        return helper.readConsumerCard(mifareManager, sectorIndex, Utils.hexStringToBytes(keyB));
     }
 
     /**
@@ -107,18 +105,6 @@ public class CardManager {
     public Result writeCard(long start, long end, int buildNum, int floorNum, int houseNum, int childHouseNum) {
 
         return helper.writeConsumerCard(mifareManager, sectorIndex, Constants.DEFAULT_KEY_B, start, end, buildNum, floorNum, houseNum, childHouseNum);
-    }
-
-    /**
-     * 设置授权卡
-     * @param start
-     * @param end
-     * @return
-     */
-
-    public Result writeAuthCard(long start, long end) {
-
-        return helper.writeAuthCard(mifareManager, sectorIndex, Constants.DEFAULT_KEY_B, Constants.DEFAULT_CONSUMER_ANTH, start, end);
     }
 
     public Result cancelCard() {

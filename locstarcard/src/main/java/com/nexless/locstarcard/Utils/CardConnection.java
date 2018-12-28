@@ -3,10 +3,7 @@ package com.nexless.locstarcard.Utils;
 import com.nexless.locstarcard.bean.ConnectInfo;
 import com.nexless.locstarcard.bean.Result;
 import com.speedata.r6lib.IMifareManager;
-
 import java.util.Map;
-
-import static com.android.hflibs.Mifare_native.AUTH_TYPEB;
 import static com.nexless.locstarcard.Utils.Constants.logI;
 
 /**
@@ -42,25 +39,24 @@ public class CardConnection {
             byte[] data = dataMap.get(i);
             if (data != null) {
                 if (mifareManager.WriteBlock(sector * 4 + i, data) != 0) {
-                    return Constants.STATUS_WRITE_FAIL;
+                    return Result.STATUS_WRITE_FAIL;
                 }
                 logI(TAG, "write data block" + i + " :" + Utils.bytesToHexString(data));
             }
         }
         // 激活卡片
         mifareManager.ActiveCard(id);
-        return Constants.STATUS_SUCC;
+        return Result.STATUS_SUCC;
     }
 
     public static ConnectInfo connect(IMifareManager mifareManager, int sector, byte[] keyB, int keyType) {
-        logI(TAG, "sector:" + sector + "    keyB:" + Utils.bytesToHexString(keyB));
         ConnectInfo connectInfo = new ConnectInfo();
-        connectInfo.resultCode = Constants.STATUS_SUCC;
+        connectInfo.resultCode = Result.STATUS_SUCC;
         // 搜索卡片
         byte[] ID = getCardId(mifareManager);
         if (ID == null) {
             logI(TAG, "No card found");
-            connectInfo.resultCode = Constants.STATUS_NO_CARD_FOUND;
+            connectInfo.resultCode = Result.STATUS_NO_CARD_FOUND;
             return connectInfo;
         }
         connectInfo.cardId = ID;
@@ -68,7 +64,7 @@ public class CardConnection {
         // 授权
         if (mifareManager.AuthenticationCardByKey(keyType, ID, sector * 4, keyB) != 0) {
             logI(TAG, "Auth failure, keyB:" + Utils.bytesToHexString(keyB));
-            connectInfo.resultCode = Constants.STATUS_AUTH_FAIL;
+            connectInfo.resultCode = Result.STATUS_AUTH_FAIL;
             return connectInfo;
         }
         return connectInfo;

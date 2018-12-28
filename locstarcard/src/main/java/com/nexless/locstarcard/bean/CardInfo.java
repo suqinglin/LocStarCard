@@ -9,7 +9,7 @@ public class CardInfo {
 
     private String cardId; // 卡片ID
     private String roomNum; // 房间号
-    private long startTime; //开始时间
+    private long startTime; // 开始时间
     private long endTime; // 结束时间
     private boolean isLoss; // 是否挂失
     private boolean isUnRegister; // 是否注销

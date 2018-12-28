@@ -44,7 +44,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 Log.i("TAG", "main_rl_setSector");
                 new AlertDialog.Builder(this)
                         .setTitle("请选择扇区")
-                        .setSingleChoiceItems(getSectorArray(), Integer.valueOf(tvSector.getText().toString()) - 1, new DialogInterface.OnClickListener() {
+                        .setSingleChoiceItems(getSectorArray(), Integer.valueOf(tvSector.getText().toString()), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 sectorIndex = which;
@@ -54,7 +54,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (sectorIndex > 0) {
-                                    tvSector.setText(String.valueOf(sectorIndex + 1));
+                                    tvSector.setText(String.valueOf(sectorIndex));
                                     CardManager.getInstance().setSectorIndex(sectorIndex);
                                 }
                             }
@@ -85,7 +85,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 GetCardIdResult result = CardManager.getInstance().getCardId();
-                                if (result.getResultCode() != Constants.STATUS_SUCC || result.getCardId() == null) {
+                                if (result.getResultCode() != Result.STATUS_SUCC || result.getCardId() == null) {
                                     showToast("获取卡号失败，错误代码：" + result.getResultCode());
                                     return;
                                 }
@@ -102,7 +102,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Result result = CardManager.getInstance().getAuth();
-                                if (result.getResultCode() != Constants.STATUS_SUCC ) {
+                                if (result.getResultCode() != Result.STATUS_SUCC ) {
                                     showToast("获取授权失败，错误代码：" + result.getResultCode());
                                 } else {
                                     showToast("获取授权成功");
@@ -119,7 +119,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 Result result = CardManager.getInstance().cancelCard();
-                                if (result.getResultCode() != Constants.STATUS_SUCC ) {
+                                if (result.getResultCode() != Result.STATUS_SUCC ) {
                                     showToast("注销失败，错误代码：" + result.getResultCode());
                                 } else {
                                     showToast("注销成功");

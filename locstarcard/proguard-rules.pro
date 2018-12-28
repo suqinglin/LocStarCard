@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# speedata
+-keep class com.speedata.r6lib.** {*;}
+# locstarcard
+-keep class com.nexless.locstarcard.CardManager {*;}
+-keep class com.nexless.locstarcard.bean.Result {*;}
+-keep class * extends com.nexless.locstarcard.bean.Result {*;}
+-keep class com.nexless.locstarcard.bean.CardInfo {*;}

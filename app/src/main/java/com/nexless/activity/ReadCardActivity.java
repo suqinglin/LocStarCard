@@ -12,6 +12,7 @@ import com.nexless.locstarcard.CardManager;
 import com.nexless.locstarcard.Utils.Constants;
 import com.nexless.locstarcard.bean.CardInfo;
 import com.nexless.locstarcard.bean.ReadCardResult;
+import com.nexless.locstarcard.bean.Result;
 import com.nexless.locstarcarddemo.R;
 import com.nexless.utils.DateUtil;
 
@@ -35,14 +36,18 @@ public class ReadCardActivity extends Activity {
         tvResult = findViewById(R.id.readCard_tv_result);
 
         ReadCardResult result = CardManager.getInstance().readCard();
-        if (result.getResultCode() == Constants.STATUS_SUCC && result.getCardInfo() != null) {
+        if (result.getResultCode() == Result.STATUS_SUCC && result.getCardInfo() != null) {
             CardInfo cardInfo = result.getCardInfo();
             tvTip.append("读卡成功");
             tvResult.append("\n\n卡号：" + cardInfo.getCardId());
-            tvResult.append("\n\n开始时间：" + DateUtil.longToString(cardInfo.getStartTime()));
-            tvResult.append("\n\n结束时间：" + DateUtil.longToString(cardInfo.getEndTime()));
-            tvResult.append("\n\n房间号：" + cardInfo.getRoomNum());
-            tvResult.append("\n\n是否挂失：" + (cardInfo.isLoss() ? "是" : "否"));
+            if (!cardInfo.isUnRegister()) {
+                tvResult.append("\n\n开始时间：" + DateUtil.longToString(cardInfo.getStartTime()));
+                tvResult.append("\n\n结束时间：" + DateUtil.longToString(cardInfo.getEndTime()));
+                tvResult.append("\n\n房间号：" + cardInfo.getRoomNum());
+                tvResult.append("\n\n是否挂失：" + (cardInfo.isLoss() ? "是" : "否"));
+            } else {
+                tvResult.append("\n\n此卡片已注销");
+            }
             tvTip.setTextColor(Color.GREEN);
         } else {
             tvTip.append("错误代码：" + result.getResultCode());

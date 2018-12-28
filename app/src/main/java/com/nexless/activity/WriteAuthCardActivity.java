@@ -164,12 +164,12 @@ public class WriteAuthCardActivity extends BaseActivity implements View.OnClickL
         long start = DateUtil.stringToLong(startTime);
         long end = DateUtil.stringToLong(endTime);
 
-        Result result = CardManager.getInstance().writeAuthCard(start, end);
-        if (result.getResultCode() == Constants.STATUS_SUCC) {
-            showToast("写卡成功");
-            onBackPressed();
-        } else {
-            showToast("写卡失败，错误代码：" + result.getResultCode());
-        }
+//        Result result = CardManager.getInstance().writeAuthCard(start, end);
+//        if (result.getResultCode() == Result.STATUS_SUCC) {
+//            showToast("写卡成功");
+//            onBackPressed();
+//        } else {
+//            showToast("写卡失败，错误代码：" + result.getResultCode());
+//        }
     }
 }

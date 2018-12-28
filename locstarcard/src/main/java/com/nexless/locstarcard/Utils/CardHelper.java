@@ -11,8 +11,8 @@ import java.util.Map;
 
 import static com.android.hflibs.Mifare_native.AUTH_TYPEA;
 import static com.android.hflibs.Mifare_native.AUTH_TYPEB;
-import static com.nexless.locstarcard.Utils.Constants.STATUS_DATA_LOSE;
-import static com.nexless.locstarcard.Utils.Constants.STATUS_SUCC;
+import static com.nexless.locstarcard.bean.Result.STATUS_DATA_LOSE;
+import static com.nexless.locstarcard.bean.Result.STATUS_SUCC;
 import static com.nexless.locstarcard.Utils.Constants.logI;
 
 /**
@@ -178,36 +178,4 @@ public class CardHelper {
         result.setResultCode(CardConnection.writeData(mifareManager, sector, conn.cardId, dataMap));
         return result;
     }
-
-    public Result writeAuthCard(IMifareManager mifareManager, int sector, byte[] keyB, byte[] consumerAuthKeyA, long start, long end) {
-
-        Result result = new Result();
-        ConnectInfo conn = CardConnection.connect(mifareManager, sector, keyB, AUTH_TYPEB);
-        result.setResultCode(conn.resultCode);
-        if (result.getResultCode() != STATUS_SUCC) {
-            return result;
-        }
-        Map<Integer, byte[]> dataMap = new HashMap<>();
-        byte[] block0 = new byte[16];
-        System.arraycopy(conn.cardId, 0, block0, 0, 4);
-        dataMap.put(0, block0);
-        byte[] block1 = new byte[16];
-        block1[0] = CARD_TYPE_AUTH;
-        System.arraycopy(Utils.timeToBytes(start), 0, block1, 2, 5);
-        System.arraycopy(Utils.timeToBytes(end), 0, block1, 7, 5);
-        dataMap.put(1, block1);
-        byte[] block2 = new byte[16];
-        System.arraycopy(consumerAuthKeyA, 0, block2, 1, 6);
-        System.arraycopy(consumerAuthKeyA, 0, block2, 12, 3);
-        dataMap.put(2, block2);
-        byte[] block3 = new byte[16];
-        System.arraycopy(Constants.DEFAULT_KEY_A, 0, block3, 0, 6);
-        System.arraycopy(Constants.DEFAULT_CONTROL_WORD, 0, block3, 6, 4);
-        System.arraycopy(Constants.DEFAULT_KEY_B, 0, block3, 10, 6);
-        dataMap.put(3, block3);
-        result.setResultCode(CardConnection.writeData(mifareManager, sector, conn.cardId, dataMap));
-        return result;
-    }
-
-
 }

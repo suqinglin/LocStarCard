@@ -179,8 +179,6 @@ public class WriteCardActivity extends BaseActivity implements View.OnClickListe
         String endTime = tvEndD.getText().toString() + " " + tvEndT.getText().toString();
         long start = DateUtil.stringToLong(startTime);
         long end = DateUtil.stringToLong(endTime);
-//        byte[] start = new byte[5];
-//        start[0] = mSYear;
         String buildNumStr = edtBuildNum.getText().toString().trim();
         if (TextUtils.isEmpty(buildNumStr)) {
             showToast("请输入楼栋号！");
@@ -207,7 +205,7 @@ public class WriteCardActivity extends BaseActivity implements View.OnClickListe
         int childHouseNum = Integer.valueOf(childHouseNumStr);
 
         Result result = CardManager.getInstance().writeCard(start, end, buildNum, floorNum, houseNum, childHouseNum);
-        if (result.getResultCode() == Constants.STATUS_SUCC) {
+        if (result.getResultCode() == Result.STATUS_SUCC) {
             showToast("写卡成功");
             onBackPressed();
         } else {

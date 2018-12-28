@@ -1,15 +1,25 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+
+    userOrg = 'suqinglin'
+    groupId = 'com.nexless.locstarcard'
+    artifactId = 'locstarcard'
+    publishVersion = '1.1'
+    desc = 'this is for test'
+    website = 'https://github.com/'
+}
+
 
 android {
     compileSdkVersion 28
-
-
 
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -17,9 +27,32 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+        }
+//        applicationVariants.all { variant ->
+//            variant.outputs.each { output ->
+//                def outputFile = output.outputFile
+//                if (outputFile != null && outputFile.name.endsWith('.aar')) {
+//                    File outputDirectory = new File(outputFile.parent)
+//                    def fileName
+//                    if (variant.buildType.name == "release") {
+//                        // Êä³öapkÃû³Æ
+//                        fileName = "locstarcardApi_release_${defaultConfig.versionName}.aar"
+//                    } else {
+//                        fileName = "locstarcardApi_debug_${defaultConfig.versionName}.aar"
+//                    }
+//                    output.outputFile = new File(outputDirectory, fileName)
+//                }
+////                outputFileName = "locstarcardApi_${defaultConfig.versionName}.aar"
+//            }
+//        }
+    }
+    lintOptions {
+        abortOnError false
     }
 }
 
@@ -44,3 +77,8 @@ dependencies {
     //    implementation(name: 'r6lib-2.2', ext: 'aar')
     implementation files('libs/classes.jar')
 }
+
+tasks.withType(Javadoc).all {
+    enabled = false
+}
+
